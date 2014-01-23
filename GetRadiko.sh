@@ -40,7 +40,7 @@ RECTIME=`expr ${RECTIMEMIN}  + ${MARGINTIMEMIN}`
 
 cd ${OUTFILEBASEPATH}
 
-playerurl=http://radiko.jp/player/swf/player_4.0.0.00.swf
+playerurl=http://radiko.jp/player/swf/player_4.0.1.00.swf
 playerfile=$HOME/bin/player.$$.swf
 keyfile=$HOME/bin/authkey.$$.png
 
