@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # args check
 if [ $# -ne 6 ]; then
 	echo "usage : $0 OUTFILE_SUFFIX  REC_TIME(s)  "\
@@ -63,7 +63,7 @@ done
 
 gpg --options $HOME/.gnupg/opt.txt $outfile
 
-DB=/home/auau1234/.gnupg/Sessionkeys.db
+DB=$HOME/.gnupg/Sessionkeys.db
 key=`gpg -o /dev/null --batch --show-session-key $outfile.gpg 2>&1|
         perl -ne 'print $1 if (/gpg: session key:\s+.(\w+:\w+)/)'`
     
@@ -71,7 +71,7 @@ RANDOM=`od -vAn -N2 -tu2 < /dev/random`;
 mytime=$(expr $RANDOM % 11);
 sleep $mytime;
 outasffile=`basename $outfile`
-ssh auau1234@t-hirao.com "sqlite3 $DB \"insert into sKey values('$outasffile.gpg', '$key');\""
+sqlite3 $DB \"insert into sKey values('$outasffile.gpg', '$key');\"
 
 
 FTP.sh $outfile
