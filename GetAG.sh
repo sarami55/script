@@ -19,8 +19,6 @@ DL_PASS=$6
 RM_PASS=$7
 BIWEEK_F=$8
 
-ftpaccount_pass='sarami55@livedoor.com':jh8tgv;
-ftpurl="ftp://ftp.4shared.com";
 working_dir=$HOME/REC
 check_biweek_dir=$HOME/100
 
