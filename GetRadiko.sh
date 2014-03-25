@@ -1,7 +1,7 @@
 #!/usr/local/bin/bash
 export PATH=$PATH:$HOME/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/games:/usr/local/sbin:/usr/local/bin
 export LD_LIBRARY_PATH=$HOME/lib
-export PERL5LIB="$HOME/lib/perl5/lib/perl5:$HOME/lib/perl5/li\b/perl5/perl5/i386-freebsd-64int"
+export PERL5LIB="$HOME/lib/perl5/lib/perl5:$HOME/lib/perl5/lib/perl5/amd64-freebsd"
 
 POSTURL="http://www8.puny.jp/uploader/upload/"
 
