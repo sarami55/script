@@ -77,58 +77,53 @@ RETRYCOUNT=0
 while :
 do
 
-	RANDOM=`od -vAn -N2 -tu2 < /dev/random`;
-        index=$(expr $RANDOM % 2);
-        index=$(expr $index + 1);
+FMSLIST=/tmp/cucu.$$
+rm -f $FMSLIST
 
-#	index=2;
+	wget -q  http://www.uniqueradio.jp/agplayerf/getfmsListHD.php \
+		-O $FMSLIST
 
-	tmpurl="rtmpe://fms${index}.uniqueradio.jp/";
-	outfile=${outfile}-${index};	
+	stream_url=`echo "cat /ag/serverlist/serverinfo[1]/server/text()" | 
+		xmllint -shell $FMSLIST | tail -2 |head -1 `
 
+	index=(`echo ${stream_url} | 
+	perl -pe 's!^fms(\d+)\.uniqueradio\.jp/\?rtmp://fms-base(\d+)\.mitene\.ad\.jp!$1 $2!'`)
 
-	RANDOM=`od -vAn -N2 -tu2 < /dev/random`;
-        index=$(expr $RANDOM % 2);
-        index=$(expr $index + 1);
+#	fms1.uniqueradio.jp/?rtmp://fms-base2.mitene.ad.jp
 
-#	index=2;
-
-	tmppath="?rtmp://fms-base${index}.mitene.ad.jp/agqr/";
-	outfile=${outfile}${index};
+	app=`echo cat "/ag/serverlist/serverinfo[1]/app/text()" | 
+		xmllint -shell $FMSLIST | tail -2 |head -1 `
 
 
-	RANDOM=`od -vAn -N2 -tu2 < /dev/random`;
-        index=$(expr $RANDOM % 2);
-        index=$(expr $index + 1);
+	stream=`echo "cat /ag/serverlist/serverinfo[1]/stream/text()" | 
+		xmllint -shell $FMSLIST | tail -2 |head -1 `
 
-	if [ $index -eq 1 ]; then
-		index=2;
-	else
-		index=1;
-	fi
+	tmpurl="rtmpe://fms${index[0]}.uniqueradio.jp/";
+	outfile=${outfile}-${index[0]};	
 
-#	index=2;
+	tmppath="?rtmp://fms-base${index[1]}.mitene.ad.jp/${app}/";
+	outfile=${outfile}${index[1]};
 
-	outfile=${outfile}${index};
+	
+	outfile=${outfile}${stream};
 
-#	echo $RANDOM;
 #	echo $tmpurl
 #	echo $tmppath
-#
-
+#	echo $outfile
 
 
 	rtmpdump -q -vr $tmpurl \
 	 -a $tmppath \
-	 -f "WIN 12,0,0,77" \
+	 -f "WIN 15,0,0,223" \
          -W "http://www.uniqueradio.jp/agplayerf/LIVEPlayer-HD0318.swf" \
          -p "http://www.uniqueradio.jp/agplayerf/newplayerf2-win.php" \
-	 -C B:0 -y "aandg${index}" \
+	 -C B:0 -y ${stream} \
          --stop ${REC_TIME} \
 	 --timeout 30 \
 	 -o $outfile
 
-  if [ $? -ne 1 -o `wc -c $outfile | awk '{print $1}'` -ge 10240 ]; then
+#  if [ $? -ne 1 -o `wc -c $outfile | awk '{print $1}'` -ge 10240 ]; then
+  if [ `wc -c $outfile | awk '{print $1}'` -ge 10240 ]; then
     break
   elif [ ${RETRYCOUNT} -ge 10 ]; then
     echo "failed rtmpdump"
@@ -145,6 +140,7 @@ source $SARAMISRC
 
 rm -f $SARAMITMP
 rm -f $SARAMISRC
+rm -f $FMSLIST
 
 MYTITLE=`echo $Program_name | tr % = | nkf -WwmQ`
 MYART=`echo $Program_personality | tr % = | nkf -WwmmQ`
@@ -179,6 +175,8 @@ sleep $mytime;
 sqlite3 $DB "insert into sKey values('$outfile.gpg', '$key');"  
 
 Update-crk.sh $working_dir/$outfile.gpg
+#cp $working_dir/$outfile.gpg /home/auau1234/www/quick/
+
 
 FTP.sh $outfile
 

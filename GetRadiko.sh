@@ -40,7 +40,7 @@ RECTIME=`expr ${RECTIMEMIN}  + ${MARGINTIMEMIN}`
 
 cd ${OUTFILEBASEPATH}
 
-playerurl=http://radiko.jp/player/swf/player_4.0.1.00.swf
+playerurl=http://radiko.jp/player/swf/player_4.1.0.00.swf
 playerfile=$HOME/bin/player.$$.swf
 keyfile=$HOME/bin/authkey.$$.png
 
@@ -224,6 +224,7 @@ outasffile=`basename $filename`
 sqlite3 $DB "insert into sKey values('$outasffile.gpg', '$key');"
 
 Update-crk.sh $OUTFILEBASEPATH/$outasffile.gpg
+#cp $working_dir/$outfile.gpg /home/auau1234/www/quick/
 
 FTP.sh $filename
 
