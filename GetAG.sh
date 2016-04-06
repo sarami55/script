@@ -62,7 +62,7 @@ outfile=$now-$SUFFIX;
 SARAMITMP=/tmp/auau.$$
 SARAMISRC=/tmp/bubu.$$
 
-(sleep 120; wget -q http://www.uniqueradio.jp/aandg -O $SARAMITMP;
+(sleep 360; wget -q http://www.uniqueradio.jp/aandg -O $SARAMITMP;
 cat $SARAMITMP | sed 's/var//' | sed 's/ = /=/' >$SARAMISRC) &
 
 
@@ -74,16 +74,35 @@ cat $SARAMITMP | sed 's/var//' | sed 's/ = /=/' >$SARAMISRC) &
 #
 #
 RETRYCOUNT=0
+MAGIC=4
+FMSLIST=/tmp/cucu.$$
+rm -f $FMSLIST
+wget -q  http://www.uniqueradio.jp/agplayerf/getfmsListHD.php \
+	-O $FMSLIST
+
 while :
 do
 
-FMSLIST=/tmp/cucu.$$
-rm -f $FMSLIST
+	while : 
+	do
+	MAGIC=`expr ${MAGIC} + 1`
+	MAGIC=$(expr ${MAGIC} % 8);
+	if [ ${MAGIC} -eq 0 ]; then 
+	   MAGIC=1;
+	   rm -f $FMSLIST;
+	   wget -q  http://www.uniqueradio.jp/agplayerf/getfmsListHD.php \
+		   -O $FMSLIST;
+	fi
+#	echo -n "${MAGIC}:"
 
-	wget -q  http://www.uniqueradio.jp/agplayerf/getfmsListHD.php \
-		-O $FMSLIST
+	app=`echo cat "/ag/serverlist/serverinfo[${MAGIC}]/app/text()" | 
+		xmllint -shell $FMSLIST | tail -2 |head -1 `
+#	echo $app
 
-	stream_url=`echo "cat /ag/serverlist/serverinfo[1]/server/text()" | 
+	if [ ${app} == 'agqr' ]; then break; fi
+	done
+
+	stream_url=`echo "cat /ag/serverlist/serverinfo[${MAGIC}]/server/text()" | 
 		xmllint -shell $FMSLIST | tail -2 |head -1 `
 
 	index=(`echo ${stream_url} | 
@@ -91,11 +110,8 @@ rm -f $FMSLIST
 
 #	fms1.uniqueradio.jp/?rtmp://fms-base2.mitene.ad.jp
 
-	app=`echo cat "/ag/serverlist/serverinfo[1]/app/text()" | 
-		xmllint -shell $FMSLIST | tail -2 |head -1 `
 
-
-	stream=`echo "cat /ag/serverlist/serverinfo[1]/stream/text()" | 
+	stream=`echo "cat /ag/serverlist/serverinfo[${MAGIC}]/stream/text()" | 
 		xmllint -shell $FMSLIST | tail -2 |head -1 `
 
 	tmpurl="rtmpe://fms${index[0]}.uniqueradio.jp/";
@@ -111,7 +127,6 @@ rm -f $FMSLIST
 #	echo $tmppath
 #	echo $outfile
 
-
 	rtmpdump -q -vr $tmpurl \
 	 -a $tmppath \
 	 -f "WIN 15,0,0,223" \
@@ -125,7 +140,7 @@ rm -f $FMSLIST
 #  if [ $? -ne 1 -o `wc -c $outfile | awk '{print $1}'` -ge 10240 ]; then
   if [ `wc -c $outfile | awk '{print $1}'` -ge 10240 ]; then
     break
-  elif [ ${RETRYCOUNT} -ge 10 ]; then
+  elif [ ${RETRYCOUNT} -ge 12 ]; then
     echo "failed rtmpdump"
     TW.pl "failed ($outfile)" > /dev/null
     exit 1
@@ -175,7 +190,7 @@ sleep $mytime;
 sqlite3 $DB "insert into sKey values('$outfile.gpg', '$key');"  
 
 Update-crk.sh $working_dir/$outfile.gpg
-#cp $working_dir/$outfile.gpg /home/auau1234/www/quick/
+#cp $working_dir/$outfile.gpg /home/user/www/quick/
 
 
 FTP.sh $outfile
