@@ -224,7 +224,7 @@ outasffile=`basename $filename`
 sqlite3 $DB "insert into sKey values('$outasffile.gpg', '$key');"
 
 Update-crk.sh $OUTFILEBASEPATH/$outasffile.gpg
-#cp $working_dir/$outfile.gpg /home/auau1234/www/quick/
+#cp $working_dir/$outfile.gpg /home/user/www/quick/
 
 FTP.sh $filename
 
