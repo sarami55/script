@@ -74,7 +74,12 @@ cat $SARAMITMP | sed 's/var//' | sed 's/ = /=/' >$SARAMISRC) &
 #
 #
 RETRYCOUNT=0
-MAGIC=4
+MAGIC=`od -vAn -N2 -tu2 < /dev/random`;      
+MAGIC=$(expr ${MAGIC} % 8);
+if [ ${MAGIC} -eq 0 ]; then 
+	MAGIC=`expr ${MAGIC} + 1`;
+fi
+
 FMSLIST=/tmp/cucu.$$
 rm -f $FMSLIST
 wget -q  http://www.uniqueradio.jp/agplayerf/getfmsListHD.php \
