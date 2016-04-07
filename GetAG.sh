@@ -125,8 +125,9 @@ do
 	tmppath="?rtmp://fms-base${index[1]}.mitene.ad.jp/${app}/";
 	outfile=${outfile}${index[1]};
 
-	
-	outfile=${outfile}${stream};
+	tmpstream=${stream#aandg};
+
+	outfile=${outfile}_${tmpstream};
 
 #	echo $tmpurl
 #	echo $tmppath
@@ -147,7 +148,7 @@ do
     break
   elif [ ${RETRYCOUNT} -ge 12 ]; then
     echo "failed rtmpdump"
-    TW.pl "failed ($outfile)" > /dev/null
+    TW.pl "failed ($SUFFIX)" > /dev/null
     exit 1
   else
     RETRYCOUNT=`expr ${RETRYCOUNT} + 1`
