@@ -152,7 +152,7 @@ do
   else
     RETRYCOUNT=`expr ${RETRYCOUNT} + 1`
   fi
-  sleep 1;
+  sleep 3;
 done
 
 ####
