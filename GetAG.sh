@@ -154,6 +154,7 @@ do
     RETRYCOUNT=`expr ${RETRYCOUNT} + 1`
   fi
   sleep 3;
+  REC_TIME=`expr ${REC_TIME} - 3`;
 done
 
 ####
