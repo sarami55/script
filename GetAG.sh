@@ -149,6 +149,9 @@ do
   elif [ ${RETRYCOUNT} -ge 12 ]; then
     echo "failed rtmpdump"
     TW.pl "failed ($SUFFIX)" > /dev/null
+    rm -f $SARAMITMP
+    rm -f $SARAMISRC
+    rm -f $FMSLIST
     exit 1
   else
     RETRYCOUNT=`expr ${RETRYCOUNT} + 1`
