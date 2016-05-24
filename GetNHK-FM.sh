@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/bash
 # args check
 if [ $# -ne 6 ]; then
 	echo "usage : $0 OUTFILE_SUFFIX  REC_TIME(s)  "\
@@ -13,13 +13,10 @@ COMMENT=$4
 DL_PASS=$5
 RM_PASS=$6
 
-working_dir=$HOME/REC
-check_biweek_dir=$HOME/100
+working_dir=/home/user/REC
+check_biweek_dir=/home/user/100
 
 now=`date '+%Y-%m-%d-%H%M'`;
-ftpdir=Public/Radio/`date '+%Y-%m'`;
-
-
 REC_TIME=$(expr ${REC_TIME}  + 60);
 
 
@@ -38,7 +35,6 @@ do
 		-y "NetRadio_HKFM_flash@108237" \
 		-a "live" \
 		-f "WIN 11,9,900,170" \
-		-p "http://www3.nhk.or.jp/netradio/player/index.html?ch=r1" \
         -W "http://www3.nhk.or.jp/netradio/files/swf/rtmpe.swf?ver.2" \
 	        --live -C B:0 --timeout 5 \
 		-o $outfile \
@@ -61,9 +57,9 @@ done
 #
 #
 
-gpg --options $HOME/.gnupg/opt.txt $outfile
+gpg --options /home/user/.gnupg/opt.txt $outfile
 
-DB=$HOME/.gnupg/Sessionkeys.db
+DB=/home/user/.gnupg/Sessionkeys.db
 key=`gpg -o /dev/null --batch --show-session-key $outfile.gpg 2>&1|
         perl -ne 'print $1 if (/gpg: session key:\s+.(\w+:\w+)/)'`
     
@@ -71,7 +67,7 @@ RANDOM=`od -vAn -N2 -tu2 < /dev/random`;
 mytime=$(expr $RANDOM % 11);
 sleep $mytime;
 outasffile=`basename $outfile`
-sqlite3 $DB \"insert into sKey values('$outasffile.gpg', '$key');\"
+ssh user@t-user.com "sqlite3 $DB \"insert into sKey values('$outasffile.gpg', '$key');\""
 
 
 FTP.sh $outfile
