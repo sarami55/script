@@ -155,15 +155,16 @@ rm -f auth2_fms_${OUTFILEPREFIX}_${CHANNEL}
 
 
 
-if [ -f ${CHANNEL}.xml ]; then
-	rm -f ${CHANNEL}.xml
-fi
+#if [ -f ${CHANNEL}.xml ]; then
+#	rm -f ${CHANNEL}.xml
+#fi
 
 wget -q "http://radiko.jp/v2/station/stream/${CHANNEL}.xml";
-stream_url=`echo "cat /url/item[1]/text()" | xmllint --shell ${CHANNEL}.xml | tail -2 | head -1`;
+mv ${CHANNEL}.xml ${CHANNEL}-$$.xml
+stream_url=`echo "cat /url/item[1]/text()" | xmllint --shell ${CHANNEL}-$$.xml | tail -2 | head -1`;
 url_parts=(`echo ${stream_url} | perl -pe 's!^(.*)://(.*?)/(.*)/(.*?)$/!$1://$2 $3 $4!'`)
 
-rm -f ${CHANNEL}.xml
+rm -f ${CHANNEL}-$$.xml
 
 #
 # rtmpdump
