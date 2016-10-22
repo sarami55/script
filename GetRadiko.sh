@@ -126,8 +126,8 @@ fi
 #
 wget -q \
      --header="pragma: no-cache" \
-     --header="X-Radiko-App: pc_1" \
-     --header="X-Radiko-App-Version: 2.0.1" \
+     --header="X-Radiko-App: pc_ts" \
+     --header="X-Radiko-App-Version: 4.0.0" \
      --header="X-Radiko-User: test-stream" \
      --header="X-Radiko-Device: pc" \
      --header="X-Radiko-AuthToken: ${authtoken}" \
