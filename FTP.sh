@@ -32,7 +32,7 @@ curl -s \
 
 
 
-myurl=http://dl2.sarami.info/Radio/`date -v -6H '+%Y-%m'`/`date -v -6H '+%a'`/$outfile.gpg
+myurl=https://dl2.sarami.info/Radio/`date -v -6H '+%Y-%m'`/`date -v -6H '+%a'`/$outfile.gpg
 
 TW.pl "[$outfile.gpg] is uploaded on $myurl" >/dev/null         
 
