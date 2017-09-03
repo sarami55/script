@@ -31,12 +31,12 @@ outfile=$now-NHK-FM-$1.m4a;
 RETRYCOUNT=0
 while :
 do
-	rtmpdump -q -r "rtmpe://netradio-hkfm-flash.nhk.jp/live" \
-		-y "NetRadio_HKFM_flash@108237" \
-		-a "live" \
-		-f "WIN 11,9,900,170" \
-        -W "http://www3.nhk.or.jp/netradio/files/swf/rtmpe.swf?ver.2" \
-	        --live -C B:0 --timeout 5 \
+	rtmpdump -q --rtmp rtmpe://netradio-fm-flash.nhk.jp \
+	         --app live \
+		--playpath NetRadio_FM_flash@63343 \
+         --swfVfy http://www3.nhk.or.jp/netradio/files/swf/rtmpe_ver2015.swf \
+		--live \
+		--timeout 5 \
 		-o $outfile \
 	        --stop ${REC_TIME}
 
