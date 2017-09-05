@@ -31,15 +31,7 @@ outfile=$now-NHK-FM-$1.m4a;
 RETRYCOUNT=0
 while :
 do
-	rtmpdump -q --rtmp rtmpe://netradio-fm-flash.nhk.jp \
-	         --app live \
-		--playpath NetRadio_FM_flash@63343 \
-         --swfVfy http://www3.nhk.or.jp/netradio/files/swf/rtmpe_ver2015.swf \
-		--live \
-		--timeout 5 \
-		-o $outfile \
-	        --stop ${REC_TIME}
-
+ffmpeg -i https://nhkradioikfm-i.akamaihd.net/hls/live/512100/1-fm/1-fm-01.m3u8 -t ${REC_TIME} -vn -acodec copy  -loglevel quiet $outfile
   
   if [ `wc -c $outfile | awk '{print $1}'` -ge 300000 ]; then
     break
