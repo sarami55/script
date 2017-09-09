@@ -17,7 +17,7 @@ working_dir=/home/user/REC
 check_biweek_dir=/home/user/100
 
 now=`date '+%Y-%m-%d-%H%M'`;
-REC_TIME=$(expr ${REC_TIME}  + 60);
+REC_TIME=$(expr ${REC_TIME}  + 120);
 
 
 cd $working_dir

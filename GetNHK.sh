@@ -20,7 +20,7 @@ now=`date '+%Y-%m-%d-%H%M'`;
 ftpdir=Public/Radio/`date '+%Y-%m'`;
 
 
-REC_TIME=$(expr ${REC_TIME}  + 60);
+REC_TIME=$(expr ${REC_TIME}  + 120);
 
 
 cd $working_dir
