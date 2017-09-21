@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 # args check
 if [ $# -ne 6 ]; then
 	echo "usage : $0 OUTFILE_SUFFIX  REC_TIME(s)  "\
@@ -31,7 +31,7 @@ outfile=$now-NHK-FM-$1.m4a;
 RETRYCOUNT=0
 while :
 do
-ffmpeg -i https://nhkradioikfm-i.akamaihd.net/hls/live/512100/1-fm/1-fm-01.m3u8 -t ${REC_TIME} -vn -acodec copy  -loglevel quiet $outfile
+ffmpeg -y -i https://nhkradioikfm-i.akamaihd.net/hls/live/512100/1-fm/1-fm-01.m3u8 -t ${REC_TIME} -vn -acodec copy -bsf:a aac_adtstoasc -loglevel quiet $outfile
   
   if [ `wc -c $outfile | awk '{print $1}'` -ge 300000 ]; then
     break
@@ -59,7 +59,7 @@ RANDOM=`od -vAn -N2 -tu2 < /dev/random`;
 mytime=$(expr $RANDOM % 11);
 sleep $mytime;
 outasffile=`basename $outfile`
-ssh user@t-user.com "sqlite3 $DB \"insert into sKey values('$outasffile.gpg', '$key');\""
+sqlite3 $DB "insert into sKey values('$outasffile.gpg', '$key');"
 
 
 FTP.sh $outfile
