@@ -37,7 +37,7 @@ outfile=$now-NHK-$1.m4a;
 RETRYCOUNT=0
 while :
 do
-	ffmpeg -y -i https://nhkradioikr1-i.akamaihd.net/hls/live/512098/1-r1/1-r1-01.m3u8 -t ${REC_TIME} -vn -acodec copy -bsf:a aac_adtstoasc -loglevel quiet $outfile
+ffmpeg -y -i https://nhkradiobkr1-i.akamaihd.net/hls/live/512291/1-r1/1-r1-01.m3u8 -t ${REC_TIME} -vn -acodec copy -loglevel quiet $outfile
 
   if [ `wc -c $outfile | awk '{print $1}'` -ge 300000 ]; then
     break
