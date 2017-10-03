@@ -184,7 +184,7 @@ filename=`basename $tmpa`
 myfilename=`basename $tmpb`
 
 cd $HOME/REC
-ffmpeg -i $filename -vn -acodec copy -metadata Comment="user" \
+ffmpeg -i $filename -vn -acodec copy -metadata Comment="user/HLS_Radiko" \
 	$myfilename >/dev/null 2>/dev/null
 rm -f $filename
 filename=$myfilename
