@@ -66,6 +66,7 @@ outasffile=`basename $outfile`
 sqlite3 $DB "insert into sKey values('$outasffile.gpg', '$key');"
 
 
+Update-crk.sh $working_dir/$outasffile.gpg
 FTP.sh $outfile
 
 rm -f $outfile.gpg                                                                        
