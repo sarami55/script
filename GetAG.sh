@@ -62,7 +62,7 @@ outfile=$now-$SUFFIX;
 SARAMITMP=/tmp/auau.$$
 SARAMISRC=/tmp/bubu.$$
 
-(sleep 360; wget -q http://www.uniqueradio.jp/aandg -O $SARAMITMP;
+(sleep 360; wget -q https://www.uniqueradio.jp/aandg -O $SARAMITMP;
 cat $SARAMITMP | sed 's/var//' | sed 's/ = /=/' >$SARAMISRC) &
 
 
@@ -75,14 +75,14 @@ cat $SARAMITMP | sed 's/var//' | sed 's/ = /=/' >$SARAMISRC) &
 #
 RETRYCOUNT=0
 MAGIC=`od -vAn -N2 -tu2 < /dev/random`;      
-MAGIC=$(expr ${MAGIC} % 8);
+MAGIC=$(expr ${MAGIC} % 3);
 if [ ${MAGIC} -eq 0 ]; then 
 	MAGIC=`expr ${MAGIC} + 1`;
 fi
 
 FMSLIST=/tmp/cucu.$$
 rm -f $FMSLIST
-wget -q  http://www.uniqueradio.jp/agplayerf/getfmsListHD.php \
+wget -q  https://www.uniqueradio.jp/agplayerf/getfmsListHD.php \
 	-O $FMSLIST
 
 while :
@@ -95,7 +95,7 @@ do
 	if [ ${MAGIC} -eq 0 ]; then 
 	   MAGIC=1;
 	   rm -f $FMSLIST;
-	   wget -q  http://www.uniqueradio.jp/agplayerf/getfmsListHD.php \
+	   wget -q  https://www.uniqueradio.jp/agplayerf/getfmsListHD.php \
 		   -O $FMSLIST;
 	fi
 #	echo -n "${MAGIC}:"
@@ -103,7 +103,6 @@ do
 	app=`echo cat "/ag/serverlist/serverinfo[${MAGIC}]/app/text()" | 
 		xmllint -shell $FMSLIST | tail -2 |head -1 `
 #	echo $app
-
 	if [ ${app} == 'agqr' ]; then break; fi
 	done
 
@@ -136,8 +135,8 @@ do
 	rtmpdump -q -vr $tmpurl \
 	 -a $tmppath \
 	 -f "WIN 15,0,0,223" \
-         -W "http://www.uniqueradio.jp/agplayerf/LIVEPlayer-HD0318.swf" \
-         -p "http://www.uniqueradio.jp/agplayerf/newplayerf2-win.php" \
+         -W "https://www.uniqueradio.jp/agplayerf/LIVEPlayer-HD0318.swf" \
+         -p "https://www.uniqueradio.jp/agplayerf/newplayerf2-win.php" \
 	 -C B:0 -y ${stream} \
          --stop ${REC_TIME} \
 	 --timeout 30 \
