@@ -26,7 +26,7 @@ keyfile=$HOME/bin/0Key-radiko.bin
 
 
 ##
-0Random-radiko.sh $AREAID > mysetenv-$$.sh
+0Random-radiko.pl $AREAID > mysetenv-$$.sh
 if [ $? -ne 0 ]; then
 	echo "ID error";
 	rm mysetenv-$$.sh
