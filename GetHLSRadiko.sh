@@ -3,76 +3,57 @@ export PATH=$PATH:$HOME/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/games:/usr/local/
 export LD_LIBRARY_PATH=$HOME/lib
 export PERL5LIB="$HOME/lib/perl5/lib/perl5:$HOME/lib/perl5/lib/perl5/amd64-freebsd"
 
-if [ $# -eq 3 ]; then
+
+if [ $# -eq 4 ]; then
   OUTFILEPREFIX=$1
   RECTIMEMIN=$2
   CHANNEL=$3
+  AREAID=$4
 else
-  echo "usage : $0 OUTFILEPREFIX RECTIMEMIN CHANNEL"
-  exit 1
+  echo "usage : $0 OUTFILEPREFIX RECTIMEMIN CHANNEL AREAID"
+  exit 1;
 fi
-
-OUTFILEPREFIX=$1
-RECTIMEMIN=$2
-CHANNEL=$3
-
-RTMPDUMP=$HOME/bin/rtmpdump
-FFMPEG=$HOME/ffmpeg
-
+FFMPEG=$HOME/bin/ffmpeg
 OUTFILEBASEPATH=$HOME/REC
 OUTFILENAME=${OUTFILEBASEPATH}/`date '+%Y-%m-%d-%H%M'`-${CHANNEL}-${OUTFILEPREFIX}
-AUAUDIR=`date '+%Y-%m'`
 FLVFILEEXT=".aac"
-
-auau=`date '+%m%d'`
-
-#sleep 30
-
 MARGINTIMEMIN=120
 RECTIME=`expr ${RECTIMEMIN}  + ${MARGINTIMEMIN}`
 
 cd ${OUTFILEBASEPATH}
 
-playerurl=http://radiko.jp/apps/js/playerCommon.js
-playerfile=$HOME/bin/player.$$.js
-keyfile=$HOME/bin/authkey.$$.png
+keyfile=$HOME/bin/0Key-radiko.bin
 
 
-#
-# get player
-#
-if [ ! -f $playerfile ]; then
-  wget -q \
-	--tries=13 \
-	--retry-connrefused \
-	--waitretry=4 \
-	--timeout=10 \
-	-O $playerfile $playerurl
-
-  if [ $? -ne 0 ]; then
-    echo "failed get player"
-    exit 1
-  fi
+##
+0Random-radiko.sh $AREAID > mysetenv-$$.sh
+if [ $? -ne 0 ]; then
+	echo "ID error";
+	rm mysetenv-$$.sh
+	exit 1;
 fi
 
-#
-# get keydata [new RadikoJSPlayer(A,'pc_html5','xxxxx 40 chars'....]
-#
-	grep -i 'new radikojsplayer' $playerfile |cut -d "'" -f 4 >$keyfile
+##
+source mysetenv-$$.sh
+##
+rm mysetenv-$$.sh
+##
+
 
 if [ -f auth1_fms_hls_$$__${OUTFILEPREFIX}_${CHANNEL} ]; then
   rm -f auth1_fms_hls_$$__${OUTFILEPREFIX}_${CHANNEL}
 fi
 
+##
 #
-# access auth1_fms_hls
+# access auth1
 #
 wget  -q\
      --header="pragma: no-cache" \
-     --header="X-Radiko-App: pc_html5" \
-     --header="X-Radiko-App-Version: 0.0.1" \
-     --header="X-Radiko-User: dummy-user" \
-     --header="X-Radiko-Device: pc" \
+     --header="X-Radiko-App: aSmartPhone7a" \
+     --header="X-Radiko-App-Version: ${APPVER}" \
+     --header="X-Radiko-User: user-${USERID}" \
+     --header="X-Radiko-Device: ${DEVICE}" \
      --save-headers \
      --tries=10 \
      --retry-connrefused \
@@ -83,7 +64,7 @@ wget  -q\
 
 if [ $? -ne 0 ]; then
   echo "failed auth1 process"
-  exit 1
+  exit 1;
 fi
 
 #
@@ -97,23 +78,25 @@ partialkey=`dd if=$keyfile bs=1 skip=${offset} count=${length} 2> /dev/null | ba
 
 #echo "authtoken: ${authtoken} offset: ${offset} length: ${length} partialkey: $partialkey"
 
-rm -f auth1_fms_hls_$$_${OUTFILEPREFIX}_${CHANNEL}
+#rm -f auth1_fms_hls_$$_${OUTFILEPREFIX}_${CHANNEL}
 
 if [ -f auth2_fms_hls_$$_${OUTFILEPREFIX}_${CHANNEL} ]; then
   rm -f auth2_fms_hls_$$_${OUTFILEPREFIX}_${CHANNEL}
 fi
 
 #
-# access auth2_fms_hls
+# access auth2
 #
 wget  -q\
      --header="pragma: no-cache" \
-     --header="X-Radiko-App: pc_html5" \
-     --header="X-Radiko-App-Version: 0.0.1" \
-     --header="X-Radiko-User: dummy-user" \
-     --header="X-Radiko-Device: pc" \
+     --header="X-Radiko-App: aSmartPhone7a" \
+     --header="X-Radiko-App-Version: ${APPVER}" \
+     --header="X-Radiko-User: user-${USERID}" \
+     --header="X-Radiko-Device: ${DEVICE}" \
      --header="X-Radiko-AuthToken: ${authtoken}" \
      --header="X-Radiko-PartialKey: ${partialkey}" \
+     --header="X-Radiko-Location: ${GPSLocation}" \
+     --header="X-Radiko-Connection: wifi" \
      --retry-connrefused \
      --waitretry=5 \
      --tries=10 \
@@ -123,27 +106,29 @@ wget  -q\
 
 if [ $? -ne 0 -o ! -f auth2_fms_hls_$$_${OUTFILEPREFIX}_${CHANNEL} ]; then
   echo "failed auth2 process"
-  exit 1
+  exit 1;
 fi
 
 #echo "authentication success"
 
-#areaid=`cat auth2_fms_hls_$$_${OUTFILEPREFIX}_${CHANNEL} | perl -ne 'print $1 if(/^([^,]+),/i)'`
-#echo "areaid: $areaid"
+#auth_areaid=`cat auth2_fms_hls_$$_${OUTFILEPREFIX}_${CHANNEL} | perl -ne 'print $1 if(/^([^,]+),/i)'`
+#echo "areaid: $auth_areaid"
 
 rm -f auth2_fms_hls_$$_${OUTFILEPREFIX}_${CHANNEL}
 
 #########
 #########
 
-wget -q "http://radiko.jp/v2/station/stream_smh_multi/${CHANNEL}.xml" -O tmp.$$.xml;
-mv tmp.$$.xml ${CHANNEL}-$$.xml
+wget -q "http://radiko.jp/v2/station/stream_smh_multi/${CHANNEL}.xml" -O ${CHANNEL}-$$.xml
+
 stream_url=`echo "cat /urls/url[1]/playlist_create_url/text()" | xmllint --shell ${CHANNEL}-$$.xml | tail -2 | head -1`;
 
 rm -f ${CHANNEL}-$$.xml
 
+
+#echo $stream_url
+
 CRLF=$(printf '\r\n')
-#echo $RECTIME
 
 #
 # ffmpeg
@@ -151,7 +136,7 @@ CRLF=$(printf '\r\n')
 RETRYCOUNT=0
 while :
 do
-ffmpeg	-loglevel quiet \
+${FFMPEG} -loglevel verbose \
  	-headers "X-Radiko-AuthToken: ${authtoken}${CRLF}" \
 	-i ${stream_url} \
 	-t ${RECTIME} \
@@ -163,28 +148,24 @@ ffmpeg	-loglevel quiet \
     break
   elif [ ${RETRYCOUNT} -ge 5 ]; then
     echo "failed ffmpeg"
-    exit 1
+    exit 1;
   else
     RETRYCOUNT=`expr ${RETRYCOUNT} + 1`
   fi
 done
 
-rm -f $playerfile $keyfile
-
 #
 #
 #
-tmpa=${OUTFILENAME}${FLVFILEEXT}
+tmpa=${OUTFILENAME}${FLVFILEEXT
 tmpb=${OUTFILENAME}.m4a
-com=$4;
-dlpass=$5;
-rmpass=$6;
 
 filename=`basename $tmpa`
 myfilename=`basename $tmpb`
 
 cd $HOME/REC
-ffmpeg -i $filename -vn -acodec copy -metadata Comment="user/HLS_Radiko" \
+${FFMPEG} -i $filename -vn -acodec copy \
+	-metadata Comment="user/HLS_Radiko" \
 	$myfilename >/dev/null 2>/dev/null
 rm -f $filename
 filename=$myfilename
