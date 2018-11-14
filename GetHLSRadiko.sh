@@ -136,7 +136,7 @@ CRLF=$(printf '\r\n')
 RETRYCOUNT=0
 while :
 do
-${FFMPEG} -loglevel verbose \
+${FFMPEG} -loglevel quiet \
  	-headers "X-Radiko-AuthToken: ${authtoken}${CRLF}" \
 	-i ${stream_url} \
 	-t ${RECTIME} \
@@ -157,7 +157,7 @@ done
 #
 #
 #
-tmpa=${OUTFILENAME}${FLVFILEEXT
+tmpa=${OUTFILENAME}${FLVFILEEXT}
 tmpb=${OUTFILENAME}.m4a
 
 filename=`basename $tmpa`
