@@ -78,7 +78,7 @@ partialkey=`dd if=$keyfile bs=1 skip=${offset} count=${length} 2> /dev/null | ba
 
 #echo "authtoken: ${authtoken} offset: ${offset} length: ${length} partialkey: $partialkey"
 
-#rm -f auth1_fms_hls_$$_${OUTFILEPREFIX}_${CHANNEL}
+rm -f auth1_fms_hls_$$_${OUTFILEPREFIX}_${CHANNEL}
 
 if [ -f auth2_fms_hls_$$_${OUTFILEPREFIX}_${CHANNEL} ]; then
   rm -f auth2_fms_hls_$$_${OUTFILEPREFIX}_${CHANNEL}
