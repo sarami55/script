@@ -202,7 +202,7 @@ ${FFMPEG} -loglevel quiet \
 	-vn -acodec copy \
 	${OUTFILENAME}${FLVFILEEXT}
 	if [ $? -ne 0 ]; then
-		echo "Can not TIME FREE audio"
+		echo "Can not get TIME FREE audio"
 		exit 1;
 	fi
 fi
