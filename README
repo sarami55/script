@@ -35,7 +35,7 @@ AreaFree recording
 		GetHLSRadiko.sh AGSON 7200 QRR
 
 	-TIME FREE recording for JOQR AGSON at 21:00 on 10 Nov 2018.
-		GetHLSRadiko.sh AGSON 201811102100-201811102300 QRR	TF
+		GetHLSRadiko.sh AGSON 201811102100-201811102300 QRR TF
 
 
 - Acknowledgements
