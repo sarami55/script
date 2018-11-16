@@ -24,7 +24,7 @@ if ($ID eq "") {
 
 
 $body = get($URL);
-die "Couldn't get XML! Check AreaID" unless defined $body;
+die "Couldn't get XML! Check AreaID\n" unless defined $body;
 
 #print $body;
 

@@ -6,24 +6,28 @@ export PERL5LIB="$HOME/lib/perl5/lib/perl5:$HOME/lib/perl5/lib/perl5/amd64-freeb
 
 if [ $# -eq 4 ]; then
   OUTFILEPREFIX=$1
-  RECTIMEMIN=$2
+  RECTIME=$2
   CHANNEL=$3
   AREAID=$4
+elif  [ $# -eq 3 ]; then
+  OUTFILEPREFIX=$1
+  RECTIME=$2
+  CHANNEL=$3
+  AREAID=$3
 else
-  echo "usage : $0 OUTFILEPREFIX RECTIMEMIN CHANNEL AREAID"
+  echo "usage : $0 OUTFILEPREFIX RECTIME CHANNEL[AREAID]"
   exit 1;
 fi
 FFMPEG=$HOME/bin/ffmpeg
 OUTFILEBASEPATH=$HOME/REC
 OUTFILENAME=${OUTFILEBASEPATH}/`date '+%Y-%m-%d-%H%M'`-${CHANNEL}-${OUTFILEPREFIX}
 FLVFILEEXT=".aac"
-MARGINTIMEMIN=120
-RECTIME=`expr ${RECTIMEMIN}  + ${MARGINTIMEMIN}`
+MARGINTIME=120
+RECTIME=`expr ${RECTIME}  + ${MARGINTIME}`
 
 cd ${OUTFILEBASEPATH}
 
 keyfile=$HOME/bin/0Key-radiko.bin
-
 
 ##
 0Random-radiko.pl $AREAID > mysetenv-$$.sh
@@ -170,6 +174,11 @@ ${FFMPEG} -i $filename -vn -acodec copy \
 rm -f $filename
 filename=$myfilename
 
+#
+#
+# optional section
+#
+#
 gpg --options $HOME/.gnupg/opt.txt $filename
 DB=$HOME/.gnupg/Sessionkeys.db
 key=`gpg -o /dev/null --batch --show-session-key $filename.gpg 2>&1|
