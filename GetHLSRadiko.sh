@@ -18,13 +18,46 @@ else
   echo "usage : $0 OUTFILEPREFIX RECTIME CHANNEL[AREAID]"
   exit 1;
 fi
+
 FFMPEG=$HOME/bin/ffmpeg
 OUTFILEBASEPATH=$HOME/REC
-OUTFILENAME=${OUTFILEBASEPATH}/`date '+%Y-%m-%d-%H%M'`-${CHANNEL}-${OUTFILEPREFIX}
 FLVFILEEXT=".aac"
-MARGINTIME=120
-RECTIME=`expr ${RECTIME}  + ${MARGINTIME}`
 
+if [ $AREAID = 'TF' ]; then
+
+	TIMEFREE=1
+	AREAID=$CHANNEL
+
+#RECTIME 201811131200-201811131215
+	if [ ${#RECTIME} -ne 25 ]; then
+		echo "TIME error   2018MMDDhhmm-2018MMDDhhmm";
+		exit 1;
+	fi
+	START=${RECTIME:0:12}
+	STOP=${RECTIME:13}
+	if  [ `expr "$START" : '[0-9]*'` -ne 12 ] ; then
+		echo "Not Number in TIME string"
+		exit 1;
+	fi
+	if  [ `expr "$STOP" : '[0-9]*'` -ne 12 ] ; then
+		echo "Not Number in TIME string"
+		exit 1;
+	fi
+	if [ $START -gt $STOP ]; then
+		echo "Start time is greater than Stop time"
+		exit 1;
+	fi
+	DATESTR=${START:0:4}-${START:4:2}-${START:6:2}-${START:8:4}
+	OUTFILENAME=${OUTFILEBASEPATH}/${DATESTR}-${CHANNEL}-${OUTFILEPREFIX}_TF
+
+else 
+	OUTFILENAME=${OUTFILEBASEPATH}/`date '+%Y-%m-%d-%H%M'`-${CHANNEL}-${OUTFILEPREFIX}
+	TIMEFREE=0
+	MARGINTIME=120
+	RECTIME=`expr ${RECTIME}  + ${MARGINTIME}`
+fi
+
+##
 cd ${OUTFILEBASEPATH}
 
 keyfile=$HOME/bin/0Key-radiko.bin
@@ -120,8 +153,12 @@ fi
 
 rm -f auth2_fms_hls_$$_${OUTFILEPREFIX}_${CHANNEL}
 
+
 #########
+CRLF=$(printf '\r\n')
+
 #########
+if [ $TIMEFREE -eq 0 ]; then
 
 wget -q "http://radiko.jp/v2/station/stream_smh_multi/${CHANNEL}.xml" -O ${CHANNEL}-$$.xml
 
@@ -131,8 +168,6 @@ rm -f ${CHANNEL}-$$.xml
 
 
 #echo $stream_url
-
-CRLF=$(printf '\r\n')
 
 #
 # ffmpeg
@@ -157,6 +192,20 @@ ${FFMPEG} -loglevel quiet \
     RETRYCOUNT=`expr ${RETRYCOUNT} + 1`
   fi
 done
+
+else
+stream_url="https://radiko.jp/v2/api/ts/playlist.m3u8?station_id=${CHANNEL}&l=15&ft=${START}00&to=${STOP}00"
+
+${FFMPEG} -loglevel quiet \
+ 	-headers "X-Radiko-AuthToken: ${authtoken}${CRLF}" \
+	-i ${stream_url} \
+	-vn -acodec copy \
+	${OUTFILENAME}${FLVFILEEXT}
+	if [ $? -ne 0 ]; then
+		echo "Can not TIME FREE audio"
+		exit 1;
+	fi
+fi
 
 #
 #

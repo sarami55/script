@@ -15,10 +15,28 @@ AreaFree recording
 - Usage
 	GetHLSRadiko.sh STR dur Sta [AID]
 
+	or
+
+	GetHLSRadiko.sh STR TIME Sta TF  (for TIME FREE)
+
+
 	STR: Any character string
 	dur: duration time (second) (plus margin time 120 sec in the script)
 	Sta: Station ID (ex. QRR, OBC, ...)
 	AID: AreaID for radiko (ex. JP13=TOKYO, ....) OPTIONAL
+
+	TIME:start and end time strings(12 digits time strings)
+		  (ex. 201801011230-201801011300)
+	TF:	 STRING 'TF' (for TIME FREE mode)
+
+
+	ex.
+	-live recording for JOQR AGSON
+		GetHLSRadiko.sh AGSON 7200 QRR
+
+	-TIME FREE recording for JOQR AGSON at 21:00 on 10 Nov 2018.
+		GetHLSRadiko.sh AGSON 201811102100-201811102300 QRR	TF
+
 
 - Acknowledgements
 	Thank jackyzy823 on GitHub for creating the usefull addon.
