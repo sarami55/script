@@ -13,12 +13,12 @@ AreaFree recording
 	(require perl, bash, ffmpeg)
    
 - Usage
-	GetHLSRadiko.sh STR dur Sta AID
+	GetHLSRadiko.sh STR dur Sta [AID]
 
 	STR: Any character string
 	dur: duration time (second) (plus margin time 120 sec in the script)
 	Sta: Station ID (ex. QRR, OBC, ...)
-	AID: AreaID for radiko (ex. JP13=TOKYO, ....)
+	AID: AreaID for radiko (ex. JP13=TOKYO, ....) OPTIONAL
 
 - Acknowledgements
 	Thank jackyzy823 on GitHub for creating the usefull addon.
