@@ -55,6 +55,10 @@ else
 	TIMEFREE=0
 	MARGINTIME=120
 	RECTIME=`expr ${RECTIME}  + ${MARGINTIME}`
+	if [ $? -ne 0 ]; then
+		echo "RECTIME!!"
+		exit 1;
+	fi
 fi
 
 ##
@@ -196,7 +200,7 @@ done
 else
 stream_url="https://radiko.jp/v2/api/ts/playlist.m3u8?station_id=${CHANNEL}&l=15&ft=${START}00&to=${STOP}00"
 
-${FFMPEG} -loglevel quiet \
+${FFMPEG} -loglevel info \
  	-headers "X-Radiko-AuthToken: ${authtoken}${CRLF}" \
 	-i ${stream_url} \
 	-vn -acodec copy \
