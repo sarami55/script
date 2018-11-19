@@ -232,6 +232,8 @@ filename=$myfilename
 # optional section
 #
 #
+if [ $TIMEFREE -eq 0 ]; then
+
 gpg --options $HOME/.gnupg/opt.txt $filename
 DB=$HOME/.gnupg/Sessionkeys.db
 key=`gpg -o /dev/null --batch --show-session-key $filename.gpg 2>&1|
@@ -245,12 +247,13 @@ outasffile=`basename $filename`
 sqlite3 $DB "insert into sKey values('$outasffile.gpg', '$key');"
 
 Update-crk.sh $OUTFILEBASEPATH/$outasffile.gpg
-#cp $working_dir/$outfile.gpg /home/user/www/quick/
 
 FTP.sh $filename
+rm -f $filename.gpg
 
-
-rm -f $filename.zip $filename.gpg
+else
+	mv $filename $HOME/$filename
+fi
 exit 0;
 
 
