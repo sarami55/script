@@ -81,7 +81,8 @@ RETRYCOUNT=0
 while :
 do
 
-	ffmpeg -i $hlsurl \
+	ffmpeg  -loglevel quiet \
+		-i $hlsurl \
 		-codec copy \
 		-t ${REC_TIME} \
 		${outfile}-tmp.mp4
