@@ -76,16 +76,22 @@ cat $SARAMITMP | sed 's/var//' | sed 's/ = /=/' >$SARAMISRC) &
 hlsurl='https://www.uniqueradio.jp/agplayer5/hls/mbr-ff.m3u8'
 
 #
-REC_TIME=`expr ${RECTIME}  + 180`
+REC_TIME=`expr ${REC_TIME}  + 120`
 #
 RETRYCOUNT=0
 while :
 do
 
 	ffmpeg  -loglevel quiet \
+		-reconnect 1 \
+		-reconnect_at_eof 1 \
+		-reconnect_streamed 1 \
+		-reconnect_delay_max 2 \
 		-i $hlsurl \
 		-codec copy \
 		-t ${REC_TIME} \
+		-movflags faststart -bsf:a aac_adtstoasc \
+		-y \
 		${outfile}-tmp.mp4
 
 	if [ `wc -c ${outfile}-tmp.mp4 | awk '{print $1}'` -ge 10240 ]; then
