@@ -76,7 +76,7 @@ cat $SARAMITMP | sed 's/var//' | sed 's/ = /=/' >$SARAMISRC) &
 hlsurl='https://www.uniqueradio.jp/agplayer5/hls/mbr-ff.m3u8'
 
 #
-REC_TIME=`expr ${REC_TIME}  + 120`
+REC_TIME=`expr ${REC_TIME}  + 180`
 #
 RETRYCOUNT=0
 while :
