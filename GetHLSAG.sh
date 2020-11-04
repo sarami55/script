@@ -5,19 +5,15 @@ export PERL5LIB="$HOME/lib/perl5/lib/perl5:$HOME/lib/perl5/lib/perl5/amd64-freeb
 
 # args check
 if [ $# -ne 8 ]; then
-	echo "usage : $0 OUTFILE_SUFFIX  REC_TIME(s)  "\
-	     "STREAM(V/A)  UPLOAD(0/1) COMMENT  DL_PASS  RM_PASS  BIWEEK(0/1)"
+	echo "usage : $0 OUTFILE_SUFFIX REC_TIME(s) "\
+	     "STREAM(V/A) BIWEEK(0/1)"
 	exit 1;
 fi
 
 SUFFIX=AAG-$1
 REC_TIME=$2
 STREAM=$3
-UPLOAD_F=$4
-COMMENT=$5
-DL_PASS=$6
-RM_PASS=$7
-BIWEEK_F=$8
+BIWEEK_F=$4
 
 working_dir=$HOME/REC
 check_biweek_dir=$HOME/100
