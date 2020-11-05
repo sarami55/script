@@ -61,8 +61,18 @@ outfile=$now-$SUFFIX;
 #
 # cf. https://www.uniqueradio.jp/agplayer5/hls/mbr-ff.m3u8
 #
+#	mbr-0.m3u8  chrome?
+#   mbr-1.m3u8  edge
+#	mbr-ff.m3u8 firefox
+#
+#	https://hls-base1.mitene.ad.jp/agqr1/iphone/3Gs.m3u8
+#	https://fms2.uniqueradio.jp/agqr1/iphone/3Gs.m3u8
+#	https://fms2.uniqueradio.jp/agqr10/aandg1.m3u8
+#   https://fms2.uniqueradio.jp/agqr10/aandg3.m3u8
+#
+#
 
-hlsurl='https://www.uniqueradio.jp/agplayer5/hls/mbr-ff.m3u8'
+hlsurl='https://fms2.uniqueradio.jp/agqr10/aandg1.m3u8'
 
 #
 REC_TIME=`expr ${REC_TIME}  + 180`
@@ -101,11 +111,12 @@ do
 	else
 	    RETRYCOUNT=`expr ${RETRYCOUNT} + 1`
 	fi
+
 	echo "DUR: $DUR" >> ${outfile}.log
 	echo "DURTMP: $DURTMP" >> ${outfile}.log
 	echo "REC: $REC_TIME" >> ${outfile}.log
-	REC_TIME=`expr ${REC_TIME} - ${DUR}`;
-#	echo "re $REC_TIME"
+	REC_TIME=`expr ${REC_TIME} - ${DUR}`
+	echo "recon REC: $REC_TIME" >> ${outfile}.log
 
 done
 
