@@ -55,13 +55,6 @@ outfile=$now-$SUFFIX;
 
 ######
 #
-SARAMITMP=/tmp/auau.$$
-SARAMISRC=/tmp/bubu.$$
-
-(sleep 120; wget -q https://www.uniqueradio.jp/aandg -O $SARAMITMP;
-cat $SARAMITMP | sed 's/var//' | sed 's/ = /=/' >$SARAMISRC) &
-
-
 #
 # ffmpeg
 #
@@ -73,11 +66,14 @@ hlsurl='https://www.uniqueradio.jp/agplayer5/hls/mbr-ff.m3u8'
 
 #
 REC_TIME=`expr ${REC_TIME}  + 180`
+
 #
 RETRYCOUNT=0
 while :
 do
 
+	START=`date +%s`
+	echo "start: $START" >> ${outfile}.log
 	ffmpeg  -loglevel quiet \
 		-reconnect 1 \
 		-reconnect_at_eof 1 \
@@ -88,71 +84,72 @@ do
 		-t ${REC_TIME} \
 		-movflags faststart -bsf:a aac_adtstoasc \
 		-y \
-		${outfile}-tmp.mp4
+		${outfile}-${RETRYCOUNT}.mp4
 
-	if [ `wc -c ${outfile}-tmp.mp4 | awk '{print $1}'` -ge 10240 ]; then
+	NOW=`date +%s`
+	DUR=`expr ${NOW} - ${START}`
+	DURTMP=`expr ${DUR} + 30`
+	if [ ${DURTMP} -ge ${REC_TIME} ]; then
+		echo "DUR: $DUR" >> ${outfile}.log
+		echo "DURTMP: $DURTMP" >> ${outfile}.log
+		echo "REC: $REC_TIME" >> ${outfile}.log
 	    break
 	elif [ ${RETRYCOUNT} -ge 5 ]; then
 	    echo "failed ffmpeg"
 	    TW.pl "failed ($SUFFIX)" > /dev/null
-	    rm -f $SARAMITMP
-	    rm -f $SARAMISRC
-	    rm -f $FMSLIST
 	    exit 1
-	  else
+	else
 	    RETRYCOUNT=`expr ${RETRYCOUNT} + 1`
-	  fi
-	  sleep 5;
-	  REC_TIME=`expr ${REC_TIME} - 5`;
+	fi
+	echo "DUR: $DUR" >> ${outfile}.log
+	echo "DURTMP: $DURTMP" >> ${outfile}.log
+	echo "REC: $REC_TIME" >> ${outfile}.log
+	REC_TIME=`expr ${REC_TIME} - ${DUR}`;
+#	echo "re $REC_TIME"
+
 done
 
-####
-source $SARAMISRC
-
-rm -f $SARAMITMP
-rm -f $SARAMISRC
-rm -f $FMSLIST
-
-MYTITLE=`echo $Program_name | tr % = | nkf -WwmQ`
-MYART=`echo $Program_personality | tr % = | nkf -WwmmQ`
-MYCOM=`echo $Program_text | tr % = | nkf -WwmQ`
-
 
 ####
-if ( [ $STREAM = 'V' -o $STREAM = 'v' ] ); then
-	ffmpeg -i ${outfile}-tmp.mp4 -codec copy -metadata Title="$MYTITLE" \
-	       -metadata Comment="x $MYCOM" -metadata Artist="$MYART"  \
-               $outfile.mp4 >/dev/null 2>/dev/null
-	rm -f ${outfile}-tmp.mp4
-	outfile=${outfile}.mp4
-else
-	ffmpeg -i ${outfile}-tmp.mp4 -vn -acodec copy -metadata title="$MYTITLE" \
-	       -metadata artist="$MYART" -metadata comment="x $MYCOM" \
-	       ${outfile}.m4a >/dev/null 2>/dev/null
-	rm -f ${outfile}-tmp.mp4
-	outfile=${outfile}.m4a
-fi
+
+for filename in ${outfile}-*.mp4; do
+
+	#echo "file $filename"
+
+####
+	if ( [ $STREAM = 'V' -o $STREAM = 'v' ] ); then
+		outfile=${filename}
+	else
+		outfile=`basename ${filename} .mp4`
+		ffmpeg -i ${filename} -vn -acodec copy \
+		       ${outfile}.m4a >/dev/null 2>/dev/null
+		rm -f ${filename}
+		outfile=${outfile}.m4a
+	fi
 
 
-gpg --options $HOME/.gnupg/opt.txt $outfile
+	gpg --options $HOME/.gnupg/opt.txt $outfile
 
-DB=$HOME/.gnupg/Sessionkeys.db
-key=`gpg -o /dev/null --batch --show-session-key $outfile.gpg 2>&1|
-	perl -ne 'print $1 if (/gpg: session key:\s+.(\w+:\w+)/)'`
+	DB=$HOME/.gnupg/Sessionkeys.db
+	key=`gpg -o /dev/null --batch --show-session-key $outfile.gpg 2>&1|
+		perl -ne 'print $1 if (/gpg: session key:\s+.(\w+:\w+)/)'`
 
-RANDOM=`od -vAn -N2 -tu2 < /dev/random`;      
-mytime=$(expr $RANDOM % 11);      
-sleep $mytime;
+	RANDOM=`od -vAn -N2 -tu2 < /dev/random`;      
+	mytime=$(expr $RANDOM % 11);      
+	sleep $mytime;
 
-sqlite3 $DB "insert into sKey values('$outfile.gpg', '$key');"  
+	sqlite3 $DB "insert into sKey values('$outfile.gpg', '$key');"  
 
-Update-crk.sh $working_dir/$outfile.gpg
-#cp $working_dir/$outfile.gpg /home/user/www/quick/
+	Update-crk.sh $working_dir/$outfile.gpg
+	#cp $working_dir/$outfile.gpg /home/user/www/quick/
 
 
-FTP.sh $outfile
+	FTP.sh $outfile
 
-rm -f $outfile.gpg
+	rm -f $outfile.gpg
+
+
+done
 
 exit 0;
 
