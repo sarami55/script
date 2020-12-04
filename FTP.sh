@@ -6,7 +6,6 @@ export PYTHONPATH=/home/user/lib/python2.7/site-packages
 export LANG=C
 
 outfile=$1
-ftpaccount_pass='user@yahoo.co.jp':PASS;
 
 #curl -s \
 #        -T "$outfile.gpg" \
@@ -25,7 +24,7 @@ curl -s \
         --retry 10 \
         --retry-delay 10 \
         --connect-timeout 120 \
-	--ftp-create-dirs \
+		--ftp-create-dirs \
         ftp://radio.sarami.info/www/Public/Radio/`date -v -6H '+%Y-%m'`/`date -v -6H '+%a'`/ >/dev/null
 
 #bypy.py upload $outfile.gpg  Radio/`date -v -6H '+%Y-%m'`/`date -v -6H '+%a'`/ >/dev/null

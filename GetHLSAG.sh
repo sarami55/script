@@ -68,7 +68,7 @@ outfile=$now-$SUFFIX;
 #	https://hls-base1.mitene.ad.jp/agqr1/iphone/3Gs.m3u8
 #	https://fms2.uniqueradio.jp/agqr1/iphone/3Gs.m3u8
 #	https://fms2.uniqueradio.jp/agqr10/aandg1.m3u8
-#   https://fms2.uniqueradio.jp/agqr10/aandg3.m3u8
+#	https://fms2.uniqueradio.jp/agqr10/aandg3.m3u8
 #
 #
 
@@ -83,7 +83,7 @@ while :
 do
 
 	START=`date +%s`
-	echo "start: $START" >> ${outfile}.log
+#	echo "start: $START" >> ${outfile}.log
 	ffmpeg  -loglevel quiet \
 		-reconnect 1 \
 		-reconnect_at_eof 1 \
@@ -98,11 +98,11 @@ do
 
 	NOW=`date +%s`
 	DUR=`expr ${NOW} - ${START}`
-	DURTMP=`expr ${DUR} + 30`
+	DURTMP=`expr ${DUR} + 60`
 	if [ ${DURTMP} -ge ${REC_TIME} ]; then
-		echo "DUR: $DUR" >> ${outfile}.log
-		echo "DURTMP: $DURTMP" >> ${outfile}.log
-		echo "REC: $REC_TIME" >> ${outfile}.log
+#		echo "DUR: $DUR" >> ${outfile}.log
+#		echo "DURTMP: $DURTMP" >> ${outfile}.log
+#		echo "REC: $REC_TIME" >> ${outfile}.log
 	    break
 	elif [ ${RETRYCOUNT} -ge 5 ]; then
 	    echo "failed ffmpeg"
@@ -112,11 +112,11 @@ do
 	    RETRYCOUNT=`expr ${RETRYCOUNT} + 1`
 	fi
 
-	echo "DUR: $DUR" >> ${outfile}.log
-	echo "DURTMP: $DURTMP" >> ${outfile}.log
-	echo "REC: $REC_TIME" >> ${outfile}.log
+#	echo "DUR: $DUR" >> ${outfile}.log
+#	echo "DURTMP: $DURTMP" >> ${outfile}.log
+#	echo "REC: $REC_TIME" >> ${outfile}.log
 	REC_TIME=`expr ${REC_TIME} - ${DUR}`
-	echo "recon REC: $REC_TIME" >> ${outfile}.log
+#	echo "recon REC: $REC_TIME" >> ${outfile}.log
 
 done
 
