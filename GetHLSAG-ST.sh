@@ -72,55 +72,21 @@ outfile=$now-$SUFFIX;
 #
 #
 
-hlsurl=' https://www.uniqueradio.jp/agplayer5/hls/mbr-ff.m3u8'
+hlsurl='https://fms2.uniqueradio.jp/agqr10/aandg3.m3u8'
 
 #
 REC_TIME=`expr ${REC_TIME}  + 180`
 
 #
-RETRYCOUNT=0
-while :
-do
 
-	START=`date +%s`
-#	echo "start: $START" >> ${outfile}.log
-	ffmpeg  -loglevel quiet \
-		-reconnect 1 \
-		-reconnect_at_eof 1 \
-		-reconnect_streamed 1 \
-		-reconnect_delay_max 2 \
-		-reconnect_on_network_error 1 \
-		-i $hlsurl \
-		-codec copy \
-		-t ${REC_TIME} \
-		-movflags faststart -bsf:a aac_adtstoasc \
-		-y \
-		${outfile}-${RETRYCOUNT}.mp4
-
-	NOW=`date +%s`
-	DUR=`expr ${NOW} - ${START}`
-	DURTMP=`expr ${DUR} + 60`
-	if [ ${DURTMP} -ge ${REC_TIME} ]; then
-#		echo "DUR: $DUR" >> ${outfile}.log
-#		echo "DURTMP: $DURTMP" >> ${outfile}.log
-#		echo "REC: $REC_TIME" >> ${outfile}.log
-	    break
-	elif [ ${RETRYCOUNT} -ge 10 ]; then
-	    echo "failed ffmpeg"
-	    TW.pl "failed ($SUFFIX)" > /dev/null
-	    exit 1
-	else
-	    RETRYCOUNT=`expr ${RETRYCOUNT} + 1`
-	fi
-
-#	echo "DUR: $DUR" >> ${outfile}.log
-#	echo "DURTMP: $DURTMP" >> ${outfile}.log
-#	echo "REC: $REC_TIME" >> ${outfile}.log
-	REC_TIME=`expr ${REC_TIME} - ${DUR}`
-#	echo "recon REC: $REC_TIME" >> ${outfile}.log
-
-done
-
+	i=${REC_TIME}
+	((sec=i%60, min=(i%3600)/60, hrs=i/3600))
+	timestamp=$(printf "%d:%02d:%02d" $hrs $min $sec)
+	streamlink -Q \
+		--hls-duration ${timestamp} \
+		$hlsurl \
+		best \
+		-o ${outfile}.mp4  >/dev/null 2>/dev/null
 
 ####
 
@@ -131,6 +97,10 @@ for filename in ${outfile}-*.mp4; do
 ####
 	if ( [ $STREAM = 'V' -o $STREAM = 'v' ] ); then
 		outfile=${filename}
+		mv $outfile tmp-${outfile}
+		ffmpeg -i tmp-${outfile} -codec copy \
+			$outfile >/dev/null 2>/dev/null
+		rm -f tmp-${outfile}
 	else
 		outfile=`basename ${filename} .mp4`
 		ffmpeg -i ${filename} -vn -acodec copy \
@@ -153,7 +123,7 @@ for filename in ${outfile}-*.mp4; do
 	sqlite3 $DB "insert into sKey values('$outfile.gpg', '$key');"  
 
 	Update-crk.sh $working_dir/$outfile.gpg
-	#cp $working_dir/$outfile.gpg /home/user/www/quick/
+	#cp $working_dir/$outfile.gpg /home/auau1234/www/quick/
 
 
 	FTP.sh $outfile
