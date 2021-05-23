@@ -90,7 +90,7 @@ REC_TIME=`expr ${REC_TIME}  + 180`
 
 ####
 
-for filename in ${outfile}-*.mp4; do
+for filename in ${outfile}.mp4; do
 
 	#echo "file $filename"
 
@@ -123,7 +123,7 @@ for filename in ${outfile}-*.mp4; do
 	sqlite3 $DB "insert into sKey values('$outfile.gpg', '$key');"  
 
 	Update-crk.sh $working_dir/$outfile.gpg
-	#cp $working_dir/$outfile.gpg /home/auau1234/www/quick/
+	#cp $working_dir/$outfile.gpg /home/user/www/quick/
 
 
 	FTP.sh $outfile
