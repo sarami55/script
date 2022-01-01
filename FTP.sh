@@ -1,41 +1,26 @@
 #!/bin/sh
-export PATH=$PATH:$HOME/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/games:/usr/local/sbin:/usr/local/bin
-export LD_LIBRARY_PATH=$HOME/lib
-export PERL5LIB="$HOME/lib/perl5/lib/perl5:$HOME/lib/perl5/lib/perl5/amd64-freebsd"
-export PYTHONPATH=/home/user/lib/python2.7/site-packages
+export PATH=$PATH:$HOME/bin
 export LANG=C
 
 outfile=$1
+MYDIR=/home/user/www/Public/Radio/
+DAY=`LC_ALL=C date -d '6 hour ago' '+%Y-%m-%d-%a'`
+OLD=`LC_ALL=C date -d '8 days ago' '+%Y-%m-%d-%a'`
 
-#curl -s \
-#        -T "$outfile.gpg" \
-#        -u "$ftpaccount_pass" \
-#        --retry 10 \
-#        --retry-delay 10 \
-#        --connect-timeout 120 \
-#	--ftp-create-dirs \
-#        ftp://ftp.4shared.com/Public/Radio/`date -v -6H '+%Y-%m'`/ >/dev/null
+MEDIR=`LC_ALL=C date -d '6 hour ago' '+%Y-%m'`/`LC_ALL=C date -d '6 hour ago' '+%a'`
+DEST=/Public/Radio/sarami/${MEDIR}/
 
+TAR=${MYDIR}${DAY}
+OTAR=${MYDIR}${OLD}
 
+if [ ! -d $TAR ]; then
+	mkdir $TAR
+fi
+if [  -d $OTAR ]; then
+	rm -rf $OTAR
+fi
 
-curl -s \
-        -T "$outfile.gpg" \
-        -u 'user:PASS' \
-        --retry 10 \
-        --retry-delay 10 \
-        --connect-timeout 120 \
-		--ftp-create-dirs \
-        ftp://radio.sarami.info/www/Public/Radio/`date -v -6H '+%Y-%m'`/`date -v -6H '+%a'`/ >/dev/null
-
-#bypy.py upload $outfile.gpg  Radio/`date -v -6H '+%Y-%m'`/`date -v -6H '+%a'`/ >/dev/null
-
-
-
-myurl=https://dl2.sarami.info/Radio/`date -v -6H '+%Y-%m'`/`date -v -6H '+%a'`/$outfile.gpg
-
-TW.pl "[$outfile.gpg] is uploaded on $myurl" >/dev/null         
+cp $outfile ${TAR}/ >/dev/null
+mega-put -c -q  $outfile ${DEST}
 
 exit 0;
-
-
-

@@ -85,17 +85,14 @@ rm -f $FMSLIST
 wget -q  https://www.uniqueradio.jp/agplayerf/getfmsListHD.php \
 	-O $FMSLIST
 
-
-SARAMI_CHECK=0
-
 while :
 do
 
 	while : 
 	do
 	MAGIC=`expr ${MAGIC} + 1`
-	MAGIC=$(expr ${MAGIC} % 8);
-#	MAGIC=$(expr ${MAGIC} % 3);
+#	MAGIC=$(expr ${MAGIC} % 8);
+	MAGIC=$(expr ${MAGIC} % 3);
 	if [ ${MAGIC} -eq 0 ]; then 
 	   MAGIC=1;
 	   rm -f $FMSLIST;
@@ -128,11 +125,6 @@ do
 	tmppath="?rtmp://fms-base${index[1]}.mitene.ad.jp/${app}/";
 	outfile=${outfile}${index[1]};
 
-###
-#	if [ "${index[0]}${index[1]}" = "11" ]; then
-#		continue
-#	fi		
-
 	tmpstream=${stream#aandg};
 
 	outfile=${outfile}_${tmpstream};
@@ -150,14 +142,6 @@ do
          --stop ${REC_TIME} \
 	 --timeout 30 \
 	 -o $outfile
-
-
-	if ( [ ! -f $SARAMITMP ] && [ ${SARAMI_CHECK} -le 4 ] && [ $RM_PASS != "T" ] ); then
-		SARAMI_CHECK=`expr ${SARAMI_CHECK} + 1`
-		continue
-	fi
-
-
 
 #  if [ $? -ne 1 -o `wc -c $outfile | awk '{print $1}'` -ge 10240 ]; then
   if [ `wc -c $outfile | awk '{print $1}'` -ge 10240 ]; then

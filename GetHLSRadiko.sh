@@ -1,8 +1,5 @@
-#!/usr/local/bin/bash
-export PATH=$PATH:$HOME/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/games:/usr/local/sbin:/usr/local/bin
-export LD_LIBRARY_PATH=$HOME/lib
-export PERL5LIB="$HOME/lib/perl5/lib/perl5:$HOME/lib/perl5/lib/perl5/amd64-freebsd"
-
+#!/bin/bash
+export PATH=$PATH:$HOME/bin
 
 if [ $# -eq 4 ]; then
   OUTFILEPREFIX=$1
@@ -19,7 +16,7 @@ else
   exit 1;
 fi
 
-FFMPEG=$HOME/bin/ffmpeg
+FFMPEG=/usr/local/bin/ffmpeg
 OUTFILEBASEPATH=$HOME/REC
 FLVFILEEXT=".aac"
 
@@ -232,28 +229,10 @@ filename=$myfilename
 # optional section
 #
 #
-if [ $TIMEFREE -eq 0 ]; then
-
-gpg --options $HOME/.gnupg/opt.txt $filename
-DB=$HOME/.gnupg/Sessionkeys.db
-key=`gpg -o /dev/null --batch --show-session-key $filename.gpg 2>&1|
-        perl -ne 'print $1 if (/gpg: session key:\s+.(\w+:\w+)/)'`
-
-RANDOM=`od -vAn -N2 -tu2 < /dev/random`;
-mytime=$(expr $RANDOM % 11);
-sleep $mytime;
-
-outasffile=`basename $filename`
-sqlite3 $DB "insert into sKey values('$outasffile.gpg', '$key');"
-
-Update-crk.sh $OUTFILEBASEPATH/$outasffile.gpg
 
 FTP.sh $filename
-rm -f $filename.gpg
+#mv $filename $HOME/$filename
 
-else
-	mv $filename $HOME/$filename
-fi
 exit 0;
 
 
