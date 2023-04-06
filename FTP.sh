@@ -21,6 +21,7 @@ if [  -d $OTAR ]; then
 fi
 
 cp $outfile ${TAR}/ >/dev/null
-mega-put -c -q  $outfile ${DEST}
+mega-put -c -q  $outfile $DEST > /dev/null
+#rm -f $outfile
 
 exit 0;

@@ -156,6 +156,7 @@ for filename in ${outfile}-*.mp4; do
 	#cp $working_dir/$outfile.gpg /home/user/www/quick/
 
 
+	sleep 10
 	FTP.sh $outfile
 
 	rm -f $outfile.gpg
