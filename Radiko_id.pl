@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+
 use XML::Simple;
 use Encode;
 use LWP::Simple;
@@ -29,7 +30,7 @@ die "Couldn't get XML! Check AreaID\n" unless defined $body;
 #print $body;
 
 my $xml = XML::Simple->new();
-my $data = $xml->XMLin($body);
+my $data = $xml->XMLin(Encode::encode('UTF-8',$body));
 
 if ($ID eq "") {
 	for (my $i=0; $i<scalar(@{$data->{stations}}); $i++) {
@@ -44,7 +45,12 @@ exit 0;
 sub myprint() {
 	my ($hash)=@_;
 		while ((my $key, my $value) = each(%$hash)) {
-			printf("%s", encode('UTF-8',$key));
+			printf("%s", decode('UTF-8',$key));
+
 			printf( " =  %s\n", $value->{id});
 		}
 }
+
+
+
+

@@ -68,6 +68,7 @@ outfile=$now-$SUFFIX;
 #	https://fms2.uniqueradio.jp/agqr10/aandg1.m3u8
 #	https://fms2.uniqueradio.jp/agqr10/aandg3.m3u8
 #	https://icraft.hs.llnwd.net/agqr10/aandg1.m3u8
+#	https://agcdn02.cdnext.stream.ne.jp/hls2/basic/data/prog_index.m3u8
 #
 hlsurl='https://www.uniqueradio.jp/agapps/hls/cdn.m3u8'
 #hlsurl='https://www.uniqueradio.jp/agplayer5/hls/mbr-ff.m3u8'
@@ -106,11 +107,11 @@ do
 	REC_TIME=`expr ${REC_TIME} - ${DUR}`
 
 	SSS=`expr ${RETRYCOUNT} % 2`
-#	if [ ${SSS} -eq 1 ]; then
-#		hlsurl='https://fms2.uniqueradio.jp/agqr10/aandg3.m3u8'
-#	else
-#		hlsurl='https://fms2.uniqueradio.jp/agqr10/aandg1.m3u8'
-#	fi
+	if [ ${SSS} -eq 1 ]; then
+		hlsurl='https://fms2.uniqueradio.jp/agqr10/aandg3.m3u8'
+	else
+		hlsurl='https://fms2.uniqueradio.jp/agqr10/aandg1.m3u8'
+	fi
 
 done
 
@@ -124,12 +125,12 @@ for filename in ${outfile}-*.mp4; do
    if ( [ $STREAM = 'V' -o $STREAM = 'v' ] ); then
         outfile=${filename}
         mv $outfile tmp-${outfile}
-        ffmpeg -i tmp-${outfile} -codec copy \
+        ffmpeg -i tmp-${outfile} -codec copy -movflags faststart \
             $outfile >/dev/null 2>/dev/null
         rm -f tmp-${outfile}
     else
         outfile=`basename ${filename} .mp4`
-        ffmpeg -i ${filename} -vn -acodec copy \
+        ffmpeg -i ${filename} -vn -acodec copy -movflags faststart \
                ${outfile}.m4a >/dev/null 2>/dev/null
         rm -f ${filename}
         outfile=${outfile}.m4a
