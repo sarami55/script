@@ -165,10 +165,10 @@ wget -q "http://radiko.jp/v2/station/stream_smh_multi/${CHANNEL}.xml" -O ${CHANN
 
 stream_url=`echo "cat /urls/url[4]/playlist_create_url/text()" | xmllint --shell ${CHANNEL}-$$.xml | tail -2 | head -1`;
 
-#rm -f ${CHANNEL}-$$.xml
+rm -f ${CHANNEL}-$$.xml
 
 
-echo $stream_url
+#echo $stream_url
 
 #
 # ffmpeg
