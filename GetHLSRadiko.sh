@@ -163,20 +163,21 @@ if [ $TIMEFREE -eq 0 ]; then
 
 wget -q "http://radiko.jp/v2/station/stream_smh_multi/${CHANNEL}.xml" -O ${CHANNEL}-$$.xml
 
-stream_url=`echo "cat /urls/url[4]/playlist_create_url/text()" | xmllint --shell ${CHANNEL}-$$.xml | tail -2 | head -1`;
+stream_url=`echo "cat /urls/url[2]/playlist_create_url/text()" | xmllint --shell ${CHANNEL}-$$.xml | tail -2 | head -1`;
 
 rm -f ${CHANNEL}-$$.xml
-
-
 #echo $stream_url
-
+wget -q --header="X-Radiko-AuthToken: ${authtoken}${CRLF}" $stream_url -O ${CHANNEL}-$$.txt
+stream_url=`cat ${CHANNEL}-$$.txt`
+rm -f ${CHANNEL}-$$.txt
+#echo $stream_url
 #
 # ffmpeg
 #
 RETRYCOUNT=0
 while :
 do
-${FFMPEG} -loglevel quiet \
+${FFMPEG} -loglevel info \
  	-headers "X-Radiko-AuthToken: ${authtoken}${CRLF}" \
 	-i ${stream_url} \
 	-t ${RECTIME} \
