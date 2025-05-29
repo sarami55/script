@@ -177,7 +177,7 @@ rm -f ${CHANNEL}-$$.txt
 RETRYCOUNT=0
 while :
 do
-${FFMPEG} -loglevel info \
+${FFMPEG} -loglevel quiet \
  	-headers "X-Radiko-AuthToken: ${authtoken}${CRLF}" \
 	-i ${stream_url} \
 	-t ${RECTIME} \
